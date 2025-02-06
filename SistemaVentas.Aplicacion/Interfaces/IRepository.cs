@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using SistemaVentas.Aplicacion.Utils;
 
 namespace SistemaVentas.Aplicacion.Interfaces
 {
@@ -10,5 +11,7 @@ namespace SistemaVentas.Aplicacion.Interfaces
         Task AddAsync(T entity);
         void Remove(T entity);
         void Update(T entity);
+
+        Task<PagedResult<T>> GetPagedAsync(int pageNumber, int pageSize, Expression<Func<T, bool>>[] filters);
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SistemaVentas.Aplicacion.Interfaces;
+using SistemaVentas.Aplicacion.Utils;
 using SistemaVentas.Infraestructura.Persistencia;
 using System.Linq.Expressions;
 
@@ -49,6 +50,22 @@ namespace SistemaVentas.Infraestructura.Repositorios
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task<PagedResult<T>> GetPagedAsync(int pageNumber, int pageSize, params Expression<Func<T, bool>>[] filters)
+        {
+            IQueryable<T> query = _dbSet;
+            foreach (var filter in filters)
+            {
+                query = query.Where(filter);
+            }
+            var totalItems = await _dbSet.CountAsync();
+            var items = await _dbSet
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<T>(items, totalItems, pageNumber, pageSize);
         }
     }
 }
