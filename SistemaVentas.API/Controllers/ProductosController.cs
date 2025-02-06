@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SistemaVentas.Infraestructura.Persistencia;
 using SistemaVentas.Dominio.Entidades;
+using SistemaVentas.Aplicacion.Interfaces;
 
 namespace SistemaVentas.API.Controllers
 {
@@ -8,26 +9,25 @@ namespace SistemaVentas.API.Controllers
     [Route("api/[controller]")]
     public class ProductosController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductosController(AppDbContext context)
+        public ProductosController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var productos = _context.Productos.ToList();
+            var productos = await _unitOfWork.Productos.GetAllActiveProductsAsync();
             return Ok(productos);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Producto producto)
+        public async Task<IActionResult> Post(Producto producto)
         {
-            _context.Productos.Add(producto);
-            _context.SaveChanges();
-            //return Ok();
+            await _unitOfWork.Productos.AddAsync(producto);
+            await _unitOfWork.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = producto.Id }, producto);
         }
     }

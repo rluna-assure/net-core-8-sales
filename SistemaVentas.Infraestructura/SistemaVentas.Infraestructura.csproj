@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SistemaVentas.Dominio\SistemaVentas.Dominio.csproj" />
+    <ProjectReference Include="..\SistemaVentas.Aplicacion\SistemaVentas.Aplicacion.csproj" />
   </ItemGroup>
 
 </Project>
